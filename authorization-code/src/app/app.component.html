@@ -1,0 +1,66 @@
+
+<div class="container">
+  <div class="content">
+    <div class="">
+      <h2> OAuth2 Test - Authorization Code Flow</h2>
+      <p>Because regular web apps are server-side apps where the source code is not publicly exposed, they can use the Authorization Code Flow (defined in OAuth 2.0 RFC 6749, section 4.1), which exchanges an Authorization Code for a token.</p>
+    </div>
+
+    <ng-container>
+      <br><br>
+      Schema: <a target="_blank" href="https://images.ctfassets.net/cdy7uua7fh8z/2nbNztohyR7uMcZmnUt0VU/2c017d2a2a2cdd80f097554d33ff72dd/auth-sequence-auth-code.png">Show me the authorization code flow again</a>
+      <br><br>
+      <h5>1. Click Login link</h5>
+      <p>The user clicks Login within the regular web application.</p>
+      <button (click)="getAuthorizationCode()" type="button" class="btn btn-success">Do login</button>
+      <br><br>
+      <h5>2. Authorization code request to /authorize (Example: https://dev-26621619.okta.com/oauth2/default/v1/authorize)</h5>
+      <p>Auth0's SDK redirects the user to the Auth0 Authorization Server</p>  <br>
+      <h5>3. Redirect to login /authorization prompt</h5>
+      <p>Your Auth0 Authorization Server redirects the user to the login and authorization prompt.</p>  <br>
+      <h5>4. Authenticate and consent</h5>
+      <p>The user authenticates using one of the configured login options and may see a consent page listing the permissions Auth0 will give to the regular web application.</p>  <br>
+      <h5>5. Authorization code</h5>
+      <p>Your Auth0 Authorization Server redirects the user back to the application with an authorization code, which is good for one use.</p>
+
+      <button (click)="getCode()" type="button" class="btn btn-success">ShowCode</button>
+      <br>
+      <div *ngIf="this.callBackurl != '' && this.showCode">
+        <strong style="color: cadetblue">Your callback URL is:</strong> <p>{{this.callBackurl}}</p>
+        <strong style="color: cadetblue">Your Code:</strong>
+        <code style="width: 900px">
+          {{this.codeString}}
+        </code>
+      </div>
+      <br>
+      <h5>6. Authorization code + client id + client secret to /oauth/token</h5>
+      <p>Auth0's SDK sends this code to the Auth0 Authorization Server (
+        /oauth/token endpoint) along with the application's Client ID and Client Secret.</p>  <br>
+      <h5>7. Validate authorization code + client id + client secret</h5>
+      <p>Your Auth0 Authorization Server verifies the code, Client ID, and Client Secret.</p>  <br>
+      <h5>8. Returns access token</h5>
+      <p>Your Auth0 Authorization Server responds with an Access Token (and optionally, a Refresh Token).</p>
+      <div>
+        <button (click)="getTokenFromCode()" type="button" class="btn btn-success">Retrieve access token</button>
+        <br><br>
+        <div class="row" *ngIf="this.accessToken != ''">
+          <div class="col-lg-6">
+            <h4>ACCESS_TOKEN:</h4>
+            <code style="width: 900px">
+              {{this.accessToken}}
+            </code>
+            <br><br>
+          </div>
+          <div class="col-lg-6">
+            <h4>PAYLOAD:</h4>
+            <code style="height: 500px">
+              {{this._accessTokenDecoded}}
+            </code>
+          </div>
+        </div>
+      </div>
+      <h5>9. Request user data with access token</h5>
+      <p>Your application can use the Access Token to call an API to access information about the user</p>  <br>
+    </ng-container>
+  </div>
+</div>
