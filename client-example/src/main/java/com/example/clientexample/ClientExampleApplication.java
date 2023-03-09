@@ -23,60 +23,13 @@ import java.util.Objects;
 @SpringBootApplication
 public class ClientExampleApplication implements CommandLineRunner {
 
-    Logger logger = LoggerFactory.getLogger(CommandLineRunner.class);
     public static void main(String[] args) {
         SpringApplication.run(ClientExampleApplication.class, args);
     }
 
 
-    // Inject the OAuth authorized client service and authorized client manager
-    // from the OAuthClientConfiguration class
-    @Autowired
-    private AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientServiceAndManager;
-
     // The command line runner method, runs once application is fully started
     @Override
     public void run(String... args) throws Exception {
-
-        ////////////////////////////////////////////////////
-        //  STEP 1: Retrieve the authorized JWT
-        ////////////////////////////////////////////////////
-
-        // Build an OAuth2 request for the Okta provider
-        OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest.withClientRegistrationId("okta")
-                .principal("Demo Service")
-                .build();
-
-        // Perform the actual authorization request using the authorized client service and authorized client
-        // manager. This is where the JWT is retrieved from the Okta servers.
-        OAuth2AuthorizedClient authorizedClient = this.authorizedClientServiceAndManager.authorize(authorizeRequest);
-
-        // Get the token from the authorized client object
-        OAuth2AccessToken accessToken = Objects.requireNonNull(authorizedClient).getAccessToken();
-
-        logger.info("Issued: " + accessToken.getIssuedAt().toString() + ", Expires:" + accessToken.getExpiresAt().toString());
-        logger.info("Scopes: " + accessToken.getScopes().toString());
-        logger.info("Token: " + accessToken.getTokenValue());
-
-        ////////////////////////////////////////////////////
-        //  STEP 2: Use the JWT and call the service
-        ////////////////////////////////////////////////////
-
-        // Add the JWT to the RestTemplate headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + accessToken.getTokenValue());
-        var request = new HttpEntity(headers);
-
-        // Make the actual HTTP GET request
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(
-                "http://localhost:8081",
-                HttpMethod.GET,
-                request,
-                String.class
-        );
-
-        String result = response.getBody();
-        logger.info("Reply = " + result);
     }
 }
