@@ -1,5 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
+import {OAuthService} from "angular-oauth2-oidc";
+import {authConfig} from "./auth.conig";
+import jwt_decode from 'jwt-decode';
 
 @Component({
   selector: 'app-root',
@@ -19,8 +22,8 @@ export class AppComponent implements OnInit{
   // @ts-ignore
   public _accessTokenDecoded: string = '';
 
-  constructor(private route: ActivatedRoute, private router: Router) {
-
+  constructor(private route: ActivatedRoute, private router: Router, private oauthService: OAuthService) {
+    this.oauthService.configure(authConfig);
   }
 
   ngOnInit(): void {
@@ -39,11 +42,15 @@ export class AppComponent implements OnInit{
   }
 
   public getTokenFromCode(): void  {
+    this.oauthService.tryLoginCodeFlow();
+    this.oauthService.hasValidAccessToken()
 
 
+    this.accessToken = sessionStorage.getItem("access_token");
+    this._accessTokenDecoded = JSON.stringify(jwt_decode(<string>sessionStorage.getItem("access_token")));
   }
 
   public getAuthorizationCode(): void  {
-
+    this.oauthService.initCodeFlow();
   }
 }
